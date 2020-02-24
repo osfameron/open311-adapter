@@ -23,9 +23,7 @@ jobs:
     steps:
     - name: Perl version
       run: perl --version
-    - uses: actions/checkout@v1
-      with:
-        fetch-depth: 1
+    - uses: actions/checkout@v2
     - name: Set up config
       run: |
         cp conf/general.yml-example conf/general.yml
