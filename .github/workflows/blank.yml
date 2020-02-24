@@ -34,10 +34,17 @@ jobs:
         cp conf/council-hounslow_confirm.yml-example conf/council-hounslow_confirm.yml
         cp conf/council-lincolnshire_confirm.yml-example conf/council-lincolnshire_confirm.yml
         cp conf/council-northamptonshire_alloy.yml-example conf/council-northamptonshire_alloy.yml
+
+    - name: Setup carton cache
+      uses: actions/cache@v1
+      with:
+        path: local
+        key: ${{ runner.os }}-perl-${{ matrix.perl_version }}-carton-${{ hashFiles('**/cpanfile.snapshot') }}
+        restore-keys: |
+          ${{ runner.os }}-perl-${{ matrix.perl_version }}-carton-
+
     - name: Install packages
-      run: .github/bin/install
-      env:
-        TRAVIS_PERL_VERSION: ${{ matrix.perl_version }}
+      run: script/setup
     - name: Install coverage
       if: matrix.coverage != ''
       run: cpanm --quiet --notest Devel::Cover::Report::Codecov
@@ -49,12 +56,6 @@ jobs:
       run: script/test
       env:
         HARNESS_PERL_SWITCHES: "-MDevel::Cover=+ignore,local/lib/perl5,^t"
-    - name: Cache installed packages
-      run: .github/bin/after_script
-      env:
-        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        TRAVIS_PERL_VERSION: ${{ matrix.perl_version }}
     - name: Generate coverage report
       if: success() && matrix.coverage != ''
       run: |
