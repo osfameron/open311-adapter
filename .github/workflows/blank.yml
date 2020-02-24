@@ -9,16 +9,6 @@ jobs:
     strategy:
       matrix:
         perl_version: [ 5.22, 5.24, 5.26, 5.28 ] # xenial, stretch, bionic, buster
-        coverage: [ 0, 1 ]
-        exclude:
-        - perl_version: '5.22'
-          coverage: 1
-        - perl_version: '5.24'
-          coverage: 0
-        - perl_version: '5.26'
-          coverage: 1
-        - perl_version: '5.28'
-          coverage: 1
     container: perl:${{ matrix.perl_version }}
     steps:
     - name: Perl version
@@ -43,19 +33,20 @@ jobs:
 
     - name: Install packages
       run: script/setup
-    - name: Install coverage
-      if: matrix.coverage != ''
-      run: cpanm --quiet --notest Devel::Cover::Report::Codecov
+
     - name: Run tests
-      if: matrix.coverage == 0
+      if: matrix.perl_version != 5.24
       run: script/test
+
     - name: Run tests (with coverage)
-      if: matrix.coverage == 1
-      run: script/test
+      if: matrix.perl_version == 5.24
+      run: |
+        cpanm --quiet --notest Devel::Cover::Report::Codecov
+        script/test
       env:
         HARNESS_PERL_SWITCHES: "-MDevel::Cover=+ignore,local/lib/perl5,^t"
     - name: Generate coverage report
-      if: success() && matrix.coverage != ''
+      if: success() && matrix.perl_version == 5.24
       run: |
         cpanm --quiet --notest JSON::MaybeXS
         cover --report codecov
