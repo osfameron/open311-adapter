@@ -259,9 +259,7 @@ sub post_service_request_update {
         }
     }
 
-    my $time = DateTime::Format::W3CDTF->new->parse_datetime($args->{updated_datetime});
-    my $formatted_time = $time->ymd . " " . $time->hms;
-    $updates .= "\nCustomer update at " . "$formatted_time" . "\n" . $args->{description};
+    $updates = $self->_generate_update($args, $updates);
 
     my $updated = {
         attributes => {
@@ -284,6 +282,16 @@ sub post_service_request_update {
         status => lc $args->{status},
         update_id => $update->{systemVersionId},
     );
+}
+
+sub _generate_update {
+    my ($self, $args, $updates) = @_;
+
+    my $time = DateTime::Format::W3CDTF->new->parse_datetime($args->{updated_datetime});
+    my $formatted_time = $time->ymd . " " . $time->hms;
+    $updates .= "\nCustomer update at " . "$formatted_time" . "\n" . $args->{description};
+
+    return $updates;
 }
 
 sub get_service_request_updates {
@@ -341,6 +349,8 @@ sub get_service_request_updates {
             if ( $status ne 'closed' ) {
                 $reason_for_closure = '';
             }
+
+            ($status, $reason_for_closure) = $self->process_update_state($status, $reason_for_closure);
 
             my $description_to_send = $description ne $last_description ? $description : '';
             $last_description = $description;
@@ -596,6 +606,12 @@ sub inspection_status {
     my ($self, $status) = @_;
 
     return $self->config->{inspection_status_mapping}->{$status} || 'open';
+}
+
+sub process_update_state {
+    my ($self, $status, $reason_for_closure) = @_;
+
+    return ($status, $reason_for_closure);
 }
 
 sub get_status_with_closure {

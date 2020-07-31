@@ -143,6 +143,38 @@ sub post_update {
     }
 }
 
+sub raise_defect {
+    my ($self, $args) = @_;
+
+    my $time = $self->parse_w3c_datetime( $args->{updated_datetime} )->strftime('%d/%m/%Y %H:%M');
+    my $data = {
+        wdm_defect_instruction => {
+            external_system_reference => $args->{service_request_id}, # XXX OR WDM REF?
+            usrn => $args->{attributes}{usrn} || '',
+            street_descriptor => $args->{attributes}{street_descriptor} || '',
+            town_name => $args->{attributes}{town_name} || '',
+            comments => $args->{description},
+            location_description => '',
+            item_category_uid => '', # XXX
+            item_type_uid => '', # XXX
+            item_detail_uid => '', # XXX
+            easting => $args->{attributes}{easting} || '',
+            northing => $args->{attributes}{northing} || '',
+            instruction_time => $time,
+            response_time_uid => '73', # Hard coded 28 days
+        }
+    };
+    if ( defined $args->{media_url} && @{$args->{media_url}} ) {
+        $data->{wdm_defect_instruction}->{documents}->{URL} = $args->{media_url};
+    }
+    my $response = $self->soap_post($self->updates_endpoint, 'CreateInstruction', 'xDoc', $self->_create_xml_string($data));
+
+    my $resp_text = $response->valueof('//CreateInstructionResponse/CreateInstructionResult');
+    if ($resp_text ne 'OK') {
+        die $resp_text;
+    }
+}
+
 sub get_updates {
     my ($self, $args) = @_;
 

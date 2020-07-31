@@ -16,11 +16,13 @@ my %config_filenames = (
     'Open311::Endpoint::Integration::UK::CheshireEast' => 'cheshireeast_confirm',
     'Open311::Endpoint::Integration::UK::EastSussex' => 'eastsussex_salesforce',
     'Open311::Endpoint::Integration::UK::Hounslow' => 'hounslow_confirm',
+    'Open311::Endpoint::Integration::UK::Hackney' => 'hackney_highways_alloy_v2',
     'Open311::Endpoint::Integration::UK::IslandRoads' => 'island_roads_confirm',
     'Open311::Endpoint::Integration::UK::Lincolnshire' => 'lincolnshire_confirm',
     'Open311::Endpoint::Integration::UK::Northamptonshire' => 'northamptonshire_alloy',
     'Open311::Endpoint::Integration::UK::Oxfordshire' => 'oxfordshire',
     'Open311::Endpoint::Integration::UK::Rutland' => 'rutland',
+    'Open311::Endpoint::Integration::UK::NorthamptonshireAlloyV2' => 'northamptonshire_alloy_v2',
 );
 
 foreach ($endpoint->plugins) {
@@ -61,6 +63,7 @@ $endpoint = Open311::Endpoint::Integration::UK::Peterborough->new;
 %config_filenames = (
     'Open311::Endpoint::Integration::UK::Peterborough::Confirm' => 'peterborough_confirm',
     'Open311::Endpoint::Integration::UK::Peterborough::Ezytreev' => 'peterborough_ezytreev',
+    'Open311::Endpoint::Integration::UK::Peterborough::Bartec' => 'peterborough_bartec',
 );
 
 foreach ($endpoint->plugins) {

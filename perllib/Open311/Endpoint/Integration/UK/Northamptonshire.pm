@@ -84,6 +84,17 @@ sub get_request_description {
     return $desc;
 }
 
+sub process_update_state {
+    my ($self, $status, $reason_for_closure) = @_;
+
+    if ( $status eq 'further_investigation' ) {
+        $status = 'investigating';
+        $reason_for_closure = 'further'
+    }
+
+    return ($status, $reason_for_closure);
+}
+
 sub _find_or_create_contact {
     my ($self, $args) = @_;
 
@@ -189,6 +200,24 @@ sub _create_contact {
         call => "resource",
         body => $contact
     );
+}
+
+sub _generate_update {
+    my ($self, $args, $updates) = @_;
+
+    my @contacts = map { $args->{$_} } grep { $args->{$_} } qw/ email phone /;
+    my $time = DateTime::Format::W3CDTF->new->parse_datetime($args->{updated_datetime});
+    my $formatted_time = $time->ymd . " " . $time->hms;
+    $updates .= sprintf(
+        "\nCustomer %s %s [%s] update at %s\n%s",
+        $args->{first_name},
+        $args->{last_name},
+        join(',', @contacts),
+        $formatted_time,
+        $args->{description}
+    );
+
+    return $updates;
 }
 
 1;

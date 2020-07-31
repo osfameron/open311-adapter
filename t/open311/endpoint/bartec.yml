@@ -1,0 +1,46 @@
+username: username
+password: password
+
+allowed_services:
+  - Leaf Removal
+  - Rubbish
+
+service_map:
+  Offensive graffiti:
+    General:
+      group: Graffiti
+      category: Offensive graffiti
+
+non_unique_services:
+  - Rubbish
+
+field_defaults:
+  Source: FixMyStreet
+  ReporterType: Public
+
+status_map:
+  OPEN: open
+  PENDING: investigating
+  INTERVENTION: in_progress
+  ASSIGNED: in_progress
+  CANCELLED: closed
+  'UNABLE TO COMPLETE': closed
+  CLOSED: closed
+  'IN PROGRESS': in_progress
+
+closing_code_map:
+  CLOSED:
+    JUSTIFIED: fixed
+
+statuses_to_fetch:
+  - OPEN
+
+note_types:
+  report: General note
+
+uprn_lookup:
+  200: USRN
+
+address_match:
+  100:
+    - OPEN SPACE
